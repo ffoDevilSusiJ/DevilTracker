@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Mail;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ConfirmationMail;
 use App\Mail\InviteMail;
 use App\Models\Invite;
 use App\Models\User;
@@ -14,7 +15,7 @@ use Illuminate\Support\Str;
 
 class InviteLinkController extends Controller
 {
-    public function store(Request $request)
+    public function sendConfirmationLink(Request $request)
     {
         $user_id = $request->input("user_id");
         $requested_user = User::find($user_id);
@@ -27,10 +28,11 @@ class InviteLinkController extends Controller
         $expirationTime = now()->addDays(1);
         $user = Auth::user();
 
+
         if ($user instanceof User) {
             $project = $user->projects->find($project_id);
             if ($project->owner->is($user)) {
-                Mail::to($requested_user->email)->send(new InviteMail($user, $token, $project));
+                Mail::to($requested_user->email)->send(new ConfirmationMail($user, $token, $project));
                 $invite = Invite::create([
                     'token' => $token,
                     'user_id' => $user_id,
@@ -45,6 +47,7 @@ class InviteLinkController extends Controller
 
 
     }
+
     public function confirmLink($token)
     {
         $invite = Invite::find($token);

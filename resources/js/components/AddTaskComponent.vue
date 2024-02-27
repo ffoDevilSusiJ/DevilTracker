@@ -1,8 +1,12 @@
 <template>
   <div class="task-add">
     <div class="task-add__container">
-      <div class="task-add__title">Создание задачи</div>
-      <form class="add-project__form" method="POST" :action="route">
+      <div style="display: flex; justify-content: space-between; align-items:center;">
+        <div class="task-add__title">Создание задачи</div>
+        <span @click="$emit('close')" class="close">&times;</span>
+
+      </div>
+      <form id="form" class="add-project__form" method="POST" :action="route">
         <input type="hidden" name="_token" :value="csrf">
         <input type="hidden" name="project_id" :value="selectedProject.id">
 
@@ -86,6 +90,15 @@ export default {
       console.log(this.projects.find((p) => p.id === selectedId));
       this.selectedProject = this.projects.find((p) => p.id === selectedId)
     },
+    mounted() {
+    const vm = this;
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        vm.$emit('close');
+      }
+    });
+  }
   }
 }
 </script>
@@ -101,7 +114,11 @@ export default {
   height: 100%;
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.5);
+  .close {
 
+    top: -4px;
+    position: relative;
+  }
   &__container {
     padding: 15px;
     width: 550px;

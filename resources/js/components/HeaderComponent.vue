@@ -1,7 +1,7 @@
 <template>
     <header class="header">
         <div class="header__container">
-            <div class="logo">
+            <div class="logo" @click="redirectToHome">
                 <img src="" alt="" class="logo__image">
                 <div class="logo__title">Devil Tracker</div>
             </div>
@@ -27,17 +27,22 @@
                 </div>
             </template>
             <create-modal v-if="showCreateModal" @open-task="openTaskModal"></create-modal>
-            <add-task :projects="projects" v-if="showTaskModal"></add-task>
+            <task_add  v-if="showTaskModal" @close="closeTaskModal" :projects="projects"></task_add>
         </div>
     </header>
 </template>
 
 <script>
+import task_add from '@components/AddTaskComponent.vue'
+
 export default {
     name: 'HeaderComponent',
     props: {
         user: Object,
         projects: Array
+    },
+    components: {
+        task_add
     },
     data() {
         let isLogin = false;
@@ -52,14 +57,20 @@ export default {
         },
         openTaskModal() {
             this.showCreateModal = false;
-            this.showTaskModal = !this.showTaskModal;
+            this.showTaskModal = true;
+        },
+        closeTaskModal() {
+            this.showTaskModal = false;
+        },
+        redirectToHome() {
+            window.location.href = '/';
         }
     }
 };
 </script>
 
 <style lang="scss">
-@import "resources/assets/sass/style.scss";
+@import "resources/assets/sass/vars.scss";
 
 .logo {
     display: flex;

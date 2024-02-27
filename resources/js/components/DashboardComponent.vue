@@ -18,36 +18,17 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="project__actions">
+                                <div class="project__action change material-icons">edit</div>
+                                <div @click="openModal($event, project)" class="project__action delete material-icons">delete
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="divider">
-                    <div class="nearest-task">
-                        <div class="nearest-task__title">Ближайшая задача</div>
-                        <task></task>
-                        <div class="nearest-task__list">
-                            <div class="nearest-task__item">Всего нужно сделать: </div>
-                            <div class="nearest-task__item">Всего в процессе: </div>
-                            <div class="nearest-task__item">Всего просроченных задач: </div>
-                        </div>
 
-                    </div>
-                    <div class="nearest-task">
-                        <div class="nearest-task__title">Ближайшая задача</div>
-                        <task></task>
-                        <div class="nearest-task__list">
-                            <div class="nearest-task__item">Всего нужно сделать: </div>
-                            <div class="nearest-task__item">Всего в процессе: </div>
-                            <div class="nearest-task__item">Всего просроченных задач: </div>
-                        </div>
-
-                    </div>
-                </div>
-                <div class="notifications">
-                    <div class="notifications__container">
-
-                    </div>
-                </div>
+                <modal v-if="showModal" @cancel="closeModal" @success="deleteProject"
+                    :title="'Подтвердите удаление проекта'"></modal>
             </template>
 
             <div v-else class="empty">
@@ -63,6 +44,7 @@
 
 <script>
 import { ref } from 'vue';
+import modal from '@components/modals/ConfirmModalComponent.vue';
 
 export default {
     name: 'DashboardComponent',
@@ -71,24 +53,63 @@ export default {
         actualTasks: Array,
         test: String
     },
-
+    components: {
+        modal
+    },
+    data() {
+        return {
+            targetProject: null,
+            openModal: false
+        }
+    },
+    computed: {
+        showModal() {
+            return this.openModal;
+        }
+    },
     created() {
         console.log(this.projects);
         if (this.projects.length > 0) {
-            this.isEmptya = false;
+            this.isEmpty = false;
         }
     },
     methods: {
         redirectToPage(id) {
-
             window.location.href = 'project/' + id;
+        },
+        closeModal() {
+            this.openModal = false;
+        },
+        openModal(e, project) {
+            e.stopPropagation();
+            this.targetProject = project;
+            this.openModal = true;
+        },
+        deleteProject() {
+            axios.delete(`/project/${this.targetProject.id}/`,
+                {
+                    project_id: this.targetProject.id,
+                }, {
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            })
+                .then(response => {
+                    var index = this.projects.findIndex((project) => project.id === this.targetProject.id);
+                    if (index !== -1) {
+                        this.projects.splice(index, 1);
+                    }
+                    this.$forceUpdate()
+                    this.closeModal()
+                })
+                .catch(error => {
+                    console.log(error);
+                });
         }
     }
 };
 </script>
 
 <style lang="scss">
-@import "resources/assets/sass/style.scss";
+@import "resources/assets/sass/vars.scss";
 
 .divider {
     display: flex;
@@ -117,7 +138,6 @@ export default {
 
     margin-left: 20px;
     width: 50%;
-    background-color: $low-contrast-base;
     padding: 25px;
 
     &__title {
@@ -125,20 +145,47 @@ export default {
         padding-top: 5px;
         border-top: 1px solid rgba(88, 88, 88, 0.322);
         margin-bottom: 25px;
+
     }
+
+    &__list {
+        gap: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: white;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: $low-contrast-hover;
+        margin-left: 5px;
+        border-left: 3px solid white;
+
+    }
+
 }
 
 .project {
+    cursor: pointer;
     height: 120px;
     width: 100%;
+    padding: 5px;
     background-color: $low-contrast-base;
     position: relative;
     border-bottom: 1px solid rgba(88, 88, 88, 0.322);
-    ;
     border-radius: 5px;
 
     &:hover {
         background-color: $low-contrast-hover;
+
     }
 
     &__info {
@@ -173,6 +220,54 @@ export default {
             width: auto;
         }
     }
+
+    &:hover {
+        background-color: $low-contrast-hover;
+
+        .project__actions {
+            opacity: 1;
+        }
+    }
+
+    .project__actions {
+        opacity: 0;
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: #2b2b2b47;
+
+        .project__action {
+            position: relative;
+            cursor: pointer;
+
+            &:hover {
+                color: #2b2b2bcc;
+
+                &::before {
+                    display: block;
+                }
+            }
+
+            &::before {
+                position: absolute;
+                top: -25px;
+                font-weight: 600;
+                display: none;
+                font-size: 14px;
+                padding: 3px;
+                color: white;
+                background-color: black;
+            }
+        }
+
+        .delete::before {
+            content: 'Удалить';
+        }
+
+        .change::before {
+            content: 'Изменить';
+        }
+    }
 }
 
 .nearest-task {
@@ -188,4 +283,5 @@ export default {
     height: 100%;
     width: 22%;
     background-color: $low-contrast-base;
-}</style>
+}
+</style>

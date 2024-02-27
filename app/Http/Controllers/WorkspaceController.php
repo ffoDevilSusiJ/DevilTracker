@@ -18,6 +18,7 @@ class WorkspaceController extends Controller
         $projects = $user->projects;
         foreach ($projects as $key => $project) {
             $project->owner;
+            $project->users;
         }
         return view("main.workspace")->with(['user' => $user, 'projects' => $projects]);
     }
@@ -27,8 +28,8 @@ class WorkspaceController extends Controller
         $project = $user->projects->find($id);
         //Инициализация пользователей внутри проектов
         $projects = $user->projects;
-        foreach ($projects as $key => $project) {
-            $project->users;
+        foreach ($projects as $key => $init_project) {
+            $init_project->users;
         }
         foreach ($project->tasks as $key => $task) {
             $task->executor;

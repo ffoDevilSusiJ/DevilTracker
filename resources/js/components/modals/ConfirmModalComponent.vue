@@ -2,11 +2,11 @@
   <div id="modal" :class="{ 'modal': true }">
     <div class="modal__content">
       <div class="modal__top">
-        <div class="modal__title">Что вы хотите создать</div>
-        <span @click="hideModal" class="close">&times;</span>
+        <div class="modal__title">{{ title }}</div>
+        <span @click="$emit('cancel')" class="close">&times;</span>
       </div>
-      <div @click="openProjectForm" class="modal__button">Проект</div>
-      <div @click="$emit('openTask')" class="modal__button">Задачу</div>
+      <div @click="$emit('success')" class="modal__button">Подтвердить</div>
+      <div @click="$emit('cancel')" class="modal__button">Отмена</div>
 
     </div>
   </div>
@@ -16,36 +16,37 @@
 
 
 export default {
-  name: 'CreateModalComponent',
+  name: 'ConfirmModalComponent',
+  props: {
+    title: String
+  },
   data() {
     return {
-      isModalVisible: false // Начинаем с тем, что модальное окно всегда видно
+      title: this.title
     };
   },
-  methods: {
-    hideModal() {
-      const modal = document.querySelector('#modal');
-      modal.classList.add('hidden');
-    },
-    openProjectForm() {
-      window.location.href = '/create/';
-    },
-    openTaskForm() {
-      window.location.href = '/project/' + this.project.id + '/' + view;
-    },
+  mounted() {
+    const vm = this;
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        vm.$emit('cancel');
+      }
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        vm.$emit('success');
+      }
+    });
   }
 }
 
-document.addEventListener('keydown', function (event) {
-  var element = document.querySelector('#modal');
-  if (event.key === 'Escape' && element.style.display !== 'none') {
-    element.classList.add('hidden')
-  }
-});
+
 </script>
 
 <style lang="scss">
-@import "resources/assets/sass/style.scss";
+@import "resources/assets/sass/vars.scss";
 
 .hidden {
   display: none !important;
@@ -99,6 +100,7 @@ document.addEventListener('keydown', function (event) {
   float: right;
   font-size: 28px;
   cursor: pointer;
+  user-select: none;
 }
 
 .close:hover,

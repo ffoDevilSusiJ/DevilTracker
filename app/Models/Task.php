@@ -14,6 +14,8 @@ class Task extends Model
         'title',
         'description',
         'creator_id',
+        'updated_at',
+        'completed_at',
         'executor_id',
         'priority_id',
         'deadline_date',

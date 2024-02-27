@@ -22,7 +22,7 @@ class TaskController extends Controller
         $executor = User::find($validatedData['executor_id']);
         $project = Project::find($validatedData['project_id']);
         $userIds = $project->users->pluck('id')->toArray();
-        
+
         if (in_array($executor->id, $userIds)) {
             $taskData = [
                 'title' => $validatedData['title'],
@@ -53,7 +53,7 @@ class TaskController extends Controller
         $executor = User::find($validatedData['executor_id']);
         $project = Project::find($validatedData['project_id']);
         $userIds = $project->users->pluck('id')->toArray();
-        
+
         if (in_array($executor->id, $userIds)) {
             $taskData = [
                 'title' => $validatedData['title'],
@@ -76,13 +76,18 @@ class TaskController extends Controller
     {
         $validatedData = $request->validate([
             'group_id' => 'required|integer',
+            'completed_at' => 'date'
         ]);
+
         $user = auth()->user();
         foreach ($user->projects as $key => $project) {
             $userTaskIds = $project->tasks->pluck('id')->toArray();
             if (in_array($id, $userTaskIds)) {
                 $task = Task::find($id);
-                $task->update(['group_id' => $validatedData['group_id']]);
+                if (!empty($validatedData['completed_at'])) {
+                    $task->update(['group_id' => $validatedData['group_id'], 'completed_at' => $validatedData['completed_at']]);
+                } else
+                    $task->update(['group_id' => $validatedData['group_id']]);
                 return response()->json(["success" => "Статус задачи успешно обновлен"]);
             }
         }

@@ -26,7 +26,7 @@
                 <div id="member-list" class="form-group">
                     <div>Добавить участников (нажать Enter)</div>
                     <div class="form-group__divider">
-                        <input class="form-group__member" required type="email" name="members[]" id="email"
+                        <input class="form-group__member" type="email" name="members[]" id="email"
                             placeholder="Почта участника" />
                         <select name="roles[]">
                             <option value="2">Исполнитель</option>
@@ -46,7 +46,6 @@
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Enter') {
             event.preventDefault();
-            console.log(1);
         }
     });
     document.addEventListener('keydown', function(event) {

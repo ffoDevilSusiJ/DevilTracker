@@ -21,7 +21,7 @@ class ProjectController extends Controller
             'description' => ['required', 'string', 'max:255']
         ]);
 
-        $id = Str::random(20); 
+        $id = Str::random(30); 
 
         $project = Project::create([
             'id' => $id,
@@ -43,10 +43,24 @@ class ProjectController extends Controller
                     'project_id' => $id,
                     'role_id' => $roles[$i]
                 ]);
-                $inviteController->sendConfirmationLink($inviteRequest); // Вызываем метод sendConfirmationLink из другого контроллера
+                $inviteController->store($inviteRequest); 
             }
             $i++;
         }
         return redirect("/project/".$id);
+    }
+    public function destroy(Request $request) {
+        
+        $validatedData = $request->validate([
+            'project_id' => ['required', 'string']
+        ]);
+
+        $user = auth()->user();
+        $project = $user->projects->find($validatedData['project_id']);
+        if($project && $project->owner_id == $user->id) {
+            $project->delete();
+        } else {
+            return response()->json(["error" => "У вас нет доступа к этому проекту"]);
+        }
     }
 }

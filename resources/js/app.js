@@ -10,8 +10,7 @@ import StatisticsComponent from '@components/StatisticsComponent.vue';
 import ProjectMenuComponent from '@components/ProjectMenuComponent.vue';
 import TaskBoardComponent from '@components/TaskBoardComponent.vue';
 import TaskChartComponent from '@components/charts/TaskChartComponent.vue';
-import CreateModalComponent  from '@components/CreateModalComponent.vue'
-import AddTaskComponent  from '@components/AddTaskComponent.vue'
+import CreateModalComponent  from '@components/modals/CreateModalComponent.vue'
 import TaskViewComponent  from '@components/TaskViewComponent.vue'
 
 
@@ -24,7 +23,6 @@ app.component('statistics', StatisticsComponent);
 app.component('project-menu', ProjectMenuComponent);
 app.component('task-chart', TaskChartComponent);
 app.component('create-modal', CreateModalComponent);
-app.component('add-task', AddTaskComponent);
 app.component('task-view', TaskViewComponent);
 
 app.use(VueAxios, axios)

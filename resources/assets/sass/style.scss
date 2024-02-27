@@ -1,13 +1,10 @@
 @import url(https://fonts.googleapis.com/css?family=Nunito:200,300,regular,500,600,700,800,900,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic);
 
-$background-color: #000000;
-$primary-color: #2f2f2f;
-$low-contrast-base: #f5f5f5;
-$low-contrast-hover: #e7e7e7;
 
 * {
     font-family: 'Nunito' !important;
 }
+
 @keyframes fadeOut {
     0% {
         opacity: 1;
@@ -31,11 +28,13 @@ $low-contrast-hover: #e7e7e7;
     display: flex;
 
 }
+
 .alert {
     position: absolute;
     bottom: 0;
     width: 100%;
 }
+
 .alert-danger {
     position: relative;
     bottom: 0;
@@ -50,7 +49,7 @@ $low-contrast-hover: #e7e7e7;
 }
 
 .material-icons {
-    font-family: 'Material Icons'!important;
+    font-family: 'Material Icons' !important;
     font-weight: normal;
     font-style: normal;
     font-size: 24px;
@@ -74,25 +73,32 @@ $low-contrast-hover: #e7e7e7;
     /* Support for IE. */
     font-feature-settings: 'liga';
 }
+
 .add-project {
     width: 40%;
     margin: auto;
     margin-top: 120px;
+
     &__title {
         font-size: 36px;
         margin-bottom: 25px;
     }
-    input textarea{
+
+    input textarea {
         font-size: 16px;
     }
-    
+
+
 }
+
 .form-group {
     margin-bottom: 18px;
+
     &__select-title {
         width: 110px;
         margin-right: 10px;
     }
+
     textarea {
         border: 0;
         padding: 7px;
@@ -106,10 +112,13 @@ $low-contrast-hover: #e7e7e7;
         height: 128px;
     }
 
+    
+
     &__divider {
         display: flex;
         margin-top: 15px;
     }
+
     input {
         outline: none;
         border: none;
@@ -117,14 +126,15 @@ $low-contrast-hover: #e7e7e7;
         width: 100%;
         height: 30px;
 
-        
+
     }
-    
+
     label {
         position: relative;
+
         &::before {
             position: absolute;
-            font-family: 'Material Icons'!important;
+            font-family: 'Material Icons' !important;
             font-weight: normal;
             font-style: normal;
             font-size: 18px;
@@ -132,22 +142,32 @@ $low-contrast-hover: #e7e7e7;
             left: -25px;
             top: 3px;
         }
-        &[for="username"]::before  {
+
+        &[for="username"]::before {
             content: 'person';
         }
-        &[for="email"]::before  {
+
+        &[for="email"]::before {
             content: 'mail';
         }
-        &[for="password"]::before  {
+
+        &[for="password"]::before {
             content: 'lock';
         }
-        &[for="password_confirmation"]::before  {
+
+        &[for="password_confirmation"]::before {
             content: 'lock_clock';
         }
-        
+
     }
-    
 }
+.form-button {
+    input {
+
+        border: 1px solid;
+    }
+}
+
 .auth {
     width: 100%;
     height: 100%;
@@ -158,12 +178,13 @@ $low-contrast-hover: #e7e7e7;
         margin-left: 110px;
         margin-top: 90px;
     }
+
     &__title {
         font-size: 26px;
         font-weight: 600;
         margin-bottom: 15px;
     }
-    
+
     .agree-term {
         display: flex;
         align-items: center;
@@ -171,15 +192,18 @@ $low-contrast-hover: #e7e7e7;
         margin-bottom: 25px;
         left: -5px;
         position: relative;
+
         input {
             width: 15px;
             height: 15px;
             margin-right: 5px;
         }
     }
+
     .form-button {
         display: flex;
         flex-direction: column;
+
         a {
             justify-self: center;
             align-self: center;

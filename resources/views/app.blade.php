@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    @vite(['resources/assets/sass/style.scss', 'resources/css/reset.css', 'resources/js/app.js'])
+    @vite(['resources/assets/sass/vars.scss', 'resources/assets/sass/style.scss', 'resources/css/reset.css', 'resources/js/app.js'])
     @section('css')
         <!-- some master css here -->
     @show

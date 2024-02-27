@@ -4,8 +4,9 @@
       <div class="task-group" v-for="groupId in 3" :key="groupId">
         <div class="task-group__title">{{ groupTitle(groupId) }}</div>
         <div class="task-group__list drop-zone" @drop="onDrop($event, groupId)" @dragenter.prevent @dragover.prevent>
-          <div class="task expand drag-el" @click="openTask($event, task)" draggable="true" @dragstart="startDrag($event, task)"
-            v-for="task in getList(groupId)" :key="task.id" :class="getClass(task)" @dragenter.prevent @dragover.prevent>
+          <div class="task expand drag-el" @click="openTask($event, task)" draggable="true"
+            @dragstart="startDrag($event, task)" v-for="task in getList(groupId)" :key="task.id" :class="getClass(task)"
+            @dragenter.prevent @dragover.prevent>
             <div class="task__title">
               <div class="material-icons">task</div>{{ task.title }} <div class="expand-icon material-icons">expand_more
               </div>
@@ -92,13 +93,18 @@ export default {
       const task = this.tasks.find((task) => task.id == itemID)
 
       if (task.group_id != groupId - 1) {
+        let body = {};
         task.group_id = groupId - 1;
-        axios.post(`/task/${itemID}/status`,
-          {
+        if (task.group_id == 2)
+          body = {
             group_id: task.group_id,
-          }, {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        })
+            completed_at: new Date()
+          }
+        else
+          body = {
+            group_id: task.group_id,
+          }
+        axios.post(`/task/${itemID}/status`, body, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, })
           .then(response => {
             console.log(response.data);
             this.$forceUpdate()
@@ -133,7 +139,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "resources/assets/sass/style.scss";
+@import "resources/assets/sass/vars.scss";
 
 .board {
   position: relative;
@@ -168,17 +174,18 @@ export default {
       height: 100%;
 
       &::-webkit-scrollbar {
-        width: 4px;
-        /* ширина scrollbar */
+        width: 6px;
       }
 
       &::-webkit-scrollbar-track {
-        background: $low-contrast-base;
-        /* цвет дорожки */
+        background: white;
       }
 
       &::-webkit-scrollbar-thumb {
         background-color: $low-contrast-hover;
+        margin-left: 5px;
+        border-left: 3px solid white;
+
       }
     }
 

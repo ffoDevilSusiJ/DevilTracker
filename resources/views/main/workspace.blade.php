@@ -26,7 +26,7 @@
                     <task-board :tasks='{{$project->tasks}}'></task-board>
                     @break
                 @case('statistics')
-                    <statistics></statistics>
+                    <statistics :project='{{$project}}'></statistics>
                     @break
                 @default
                 {{ request()->route('show_missing_view') }}

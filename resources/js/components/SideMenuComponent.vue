@@ -97,7 +97,7 @@ export default {
 
 
 <style lang="scss">
-@import "resources/assets/sass/style.scss";
+@import "resources/assets/sass/vars.scss";
 
 .side-menu {
     height: calc(100vh - 40px);
