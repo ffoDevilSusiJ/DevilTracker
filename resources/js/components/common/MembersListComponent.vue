@@ -2,15 +2,16 @@
   <div class="members">
     <div class="members__container">
       <div class="members__list">
-        <div v-for="member in users" class="member">
+        <div v-for="member in users" :class="{member: true, current_user: isUser(member.username)}">
           <div class="member__avatar">
             <img :src="member.avatar_path" alt="">
           </div>
+          <div v-if="member.role_id === 1" class="member__admin material-icons">person</div>
           <div class="member__username">{{ member.username }}</div>
           <div class="member__email">{{ member.email }}</div>
           <div class="member__actions">
-            <div class="member__action change material-icons">manage_accounts</div>
-            <div class="member__action delete material-icons">delete</div>
+            <div v-if="member.role_id !== 1" @click="$emit('edit', member)" class="member__action change material-icons">manage_accounts</div>
+            <div v-if="member.role_id !== 1" @click="$emit('delete', member)" class="member__action delete material-icons">delete</div>
           </div>
         </div>
       </div>
@@ -25,13 +26,20 @@ export default {
   props: {
     users: Array
   },
+  methods: {
+    isUser(username) {
+      return document.getElementsByClassName("user-bar__username")[0].textContent == username;
+    }
+  }
 }
 </script>
 
 
 <style lang="scss">
 @import "resources/assets/sass/vars.scss";
-
+.current_user {
+  background-color: $low-contrast-hover!important;
+}
 .members {
   width: 500px;
   height: 500px;
@@ -70,6 +78,11 @@ export default {
       height: 40px;
       width: auto;
     }
+  }
+  &__admin {
+    color: darkorange;
+    position: absolute;
+    left: 0;
   }
   &__username {
     font-weight: 600;

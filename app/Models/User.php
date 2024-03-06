@@ -12,6 +12,11 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
+
+    const ROLE_ADMIN = 1;
+    const ROLE_MANAGER = 2;
+    const ROLE_EXECUTOR = 3;
+
     protected $table = 'user';
     protected $plural = false;
     /**
@@ -46,7 +51,20 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
     public function projects()
     {
-        return $this->belongsToMany(Project::class, 'projects_users');
+        return $this->belongsToMany(Project::class, 'projects_users')->withPivot('role_id');
     }
-   
+    public function owned_tasks()
+    {
+        return $this->hasMany(Task::class, "creator_id", "id");
+    }
+    public function assigned_tasks()
+    {
+        return $this->hasMany(Task::class, "executor_id", "id");
+    }
+    public function tasks()
+    {
+        $ownedTasks = $this->owned_tasks;
+        $assignedTasks = $this->assigned_tasks;
+        return $ownedTasks->merge($assignedTasks);
+    }
 }

@@ -20,7 +20,8 @@ class Task extends Model
         'priority_id',
         'deadline_date',
         'project_id',
-        'group_id'
+        'group_id',
+        'time_spent'
     ];
 
     public function executor() {
@@ -31,5 +32,8 @@ class Task extends Model
     }
     public function creator() {
         return $this->belongsTo(User::class);
+    }
+    public function project() {
+        return $this->belongsTo(Project::class);
     }
 }

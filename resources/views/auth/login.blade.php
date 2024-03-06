@@ -20,7 +20,7 @@
                 </div>
                 <div class="form-group form-button">
                     <input type="submit" name="signup" id="signup" class="form-submit" value="Войти" />
-                    <a href="/login" class="signup-image-link">У меня нет аккаунта</a>
+                    <a href="/join" class="signup-image-link">У меня нет аккаунта</a>
                 </div>
             </form>
         </div>

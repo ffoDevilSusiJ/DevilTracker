@@ -12,7 +12,7 @@
             <div class="">Участники</div>
             <div class="" @click="openMemberModal">Добавить</div>
           </div>
-          <members class="project-menu__members" :users="project.users"></members>
+          <members class="project-menu__members" @edit="selectMember" @delete="deleteMember"  :users="project.users"></members>
         </div>
         <div class="project-menu__statistics">
           <div class="task-pie">
@@ -22,13 +22,13 @@
         </div>
       </div>
     </div>
-    <add_member v-if="addMemberModal" @close="closeMemberModal" :project="project"></add_member>
+    <add_member v-if="addMemberModal" :member="selectedMember" @close="closeMemberModal" :project="project"></add_member>
   </div> 
 </template>
 
 <script>
 import members from '@components/common/MembersListComponent.vue';
-import add_member from '@components/AddMemberComponent.vue';
+import add_member from '@components/modals/MemberModalComponent.vue';
 
 export default {
   name: 'ProjectMenuComponent',
@@ -42,7 +42,8 @@ export default {
   },
   data() {
     return {
-      addMemberModal: false
+      addMemberModal: false,
+      selectedMember: null
     }
   },
   created() {
@@ -54,10 +55,29 @@ export default {
       console.log(2);
       this.addMemberModal = true
     },
+    selectMember(member) {
+      this.selectedMember = member;
+      this.addMemberModal = true;
+    },
+    deleteMember(member) {
+      this.selectedMember = null;
+      let member_id = member.id;
+      axios.delete(`/member/${member_id}/`, { id: member_id }, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+        .then(response => {
+          var index = this.project.users.findIndex((member) => member.id === member_id);
+          if (index !== -1) {
+            this.tasks.splice(index, 1);
+            this.$forceUpdate();
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        })
+    },
     closeMemberModal() {
-      console.log(3);
-
       this.addMemberModal = false
+      this.selectedMember = null;
+
     },
   }
 };

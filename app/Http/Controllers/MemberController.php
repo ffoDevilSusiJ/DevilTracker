@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\MemberService;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Mail\InviteLinkController;
 use App\Models\Project;
@@ -10,31 +11,33 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 class MemberController extends Controller
 {
-    public function store(Request $request, $id) {
-
-        $members = $request->input("members");
-        $roles = $request->input("roles");
-
-        $inviteController = new InviteLinkController(); 
-        $i = 0;
-        foreach ($members as $key => $email) {
-            $member = User::where('email', $email)->first();
-            if($member) {
-                $inviteRequest = new Request([
-                    'user_id' => $member->id,
-                    'project_id' => $id,
-                    'role_id' => $roles[$i]
-                ]);
-                $inviteController->store($inviteRequest);
-            }
-            $i++;
-        }
-        return redirect("/project/".$id);
+    protected $memberService;
+    public function __construct(MemberService $memberService) {
+        $this->memberService = $memberService;
     }
-    public function destroy(Request $request, $pro) {
+    public function store(Request $request)
+    {
         $validatedData = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string', 'max:255']
+            'project_id' => ['required','string'],
+            'members' => ['required','array'],
+            'roles' => ['required','array'],
         ]);
+        
+        return $this->memberService->create($validatedData);
+    }
+    public function edit(Request $request) {
+        $validatedData = $request->validate([
+            'id' => ['required', 'integer'],
+            'project_id' => ['required','string'],
+            'role_id' => ['required','integer'],
+        ]);
+        return $this->memberService->update($validatedData);
+    }
+    public function destroy(Request $request) {
+        $validatedData = $request->validate([
+            'id' => ['required', 'integer'],
+            'project_id' => ['required','string'],
+        ]);
+        return $this->memberService->delete($validatedData);
     }
 }

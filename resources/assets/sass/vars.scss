@@ -4,3 +4,28 @@ $low-contrast-base: #f5f5f5;
 $low-contrast-hover: #e7e7e7;
 $task-base: #7ddfe9;
 $task-hover: #10535a;
+
+
+.high-priority-border {
+    border-left: 6px solid rgb(194, 0, 0);
+}
+
+.mid-priority-border {
+    border-left: 6px solid #ff7c00;
+}
+
+.low-priority-border {
+    border-left: 6px solid rgb(124, 124, 124);
+}
+
+.high-priority-color {
+    color:rgb(194, 0, 0);
+}
+
+.mid-priority-color {
+    color: #ff7c00;
+}
+
+.low-priority-color {
+    color: rgb(124, 124, 124);
+}

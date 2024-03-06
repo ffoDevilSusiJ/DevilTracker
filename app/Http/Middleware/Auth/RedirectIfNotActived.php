@@ -5,13 +5,12 @@ namespace App\Http\Middleware\Auth;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
-class RedirectIfNotAuthenticated
+class RedirectIfNotActived
 {
     public function handle($request, Closure $next)
     {
-        if (!Auth::check()) {
-            $request->session()->put('url.intended', $request->fullUrl());
-            return redirect('/login');
+        if(!auth()->user()->active) {
+            return response()->view('auth.stab');
         }
         return $next($request);
     }

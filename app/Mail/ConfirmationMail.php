@@ -15,15 +15,12 @@ class ConfirmationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $user;
-    public $confirmationLink;
-    public $project;
-    public function __construct(User $user, string $confirmationLink, Project $project)
+    public $username;
+    public $url;
+    public function __construct(string $url, $username)
     {
-        $this->user = $user;
-        $this->confirmationLink = $confirmationLink;
-        $this->project = $project;
-
+        $this->username = $username;
+        $this->url = $url;
     }
 
     /**

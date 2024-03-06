@@ -1,10 +1,10 @@
 @component('mail::message')
 # Подтверждение почты
 
-Спасибо за регистрацию, {{$user.username}}!
+Спасибо за регистрацию, {{$username}}!
 Пожалуйста, нажмите на кнопку ниже, чтобы подтвердить свой адрес электронной почты:
 
-@component('mail::button', ['url' => $url])
+@component('mail::button', ['url' => 'http://localhost:8000/confirm/' . $url])
 Подтвердить почту
 @endcomponent
 

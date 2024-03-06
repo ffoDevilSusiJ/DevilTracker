@@ -26,21 +26,25 @@ class WorkspaceController extends Controller
     {
         $user = Auth::user();
         $project = $user->projects->find($id);
-        //Инициализация пользователей внутри проектов
-        $projects = $user->projects;
-        foreach ($projects as $key => $init_project) {
-            $init_project->users;
-        }
-        foreach ($project->tasks as $key => $task) {
-            $task->executor;
-            $task->creator;
-        }
         if ($project) {
+            $projects = $user->projects;
+            foreach ($projects as $key => $init_project) {
+                $init_project->users;
+            }
+            foreach ($project->tasks as $key => $task) {
+                $task->executor;
+                $task->creator;
+            }
+            foreach ($project->users as $key => $user) {
+                $user->role_id = $user->projects->find($project)->pivot->role_id;
+            }
             $project->owner;
             $project->tasks;
-            return view("main.workspace")->with(['user' => $user, 'projects' => $projects, 'project' => $project, 'view'=>$view]);
+            return view("main.workspace")->with(['user' => $user, 'projects' => $projects, 'project' => $project, 'view' => $view]);
+
+
         } else {
-            return response([], 404);
+            return abort(404);
         }
     }
     public function showMissingView(): Response

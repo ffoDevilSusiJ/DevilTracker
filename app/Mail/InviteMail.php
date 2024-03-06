@@ -18,9 +18,9 @@ class InviteMail extends Mailable
     public $user;
     public $confirmationLink;
     public $project;
-    public function __construct(User $user, string $confirmationLink, Project $project)
+    public function __construct(string $confirmationLink, Project $project)
     {
-        $this->user = $user;
+        $this->user = auth()->user();
         $this->confirmationLink = $confirmationLink;
         $this->project = $project;
 

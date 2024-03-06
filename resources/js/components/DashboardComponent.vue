@@ -19,7 +19,7 @@
                                 </div>
                             </div>
                             <div class="project__actions">
-                                <div class="project__action change material-icons">edit</div>
+                                <div @click="openProjectModal($event, project)" class="project__action change material-icons">edit</div>
                                 <div @click="openModal($event, project)" class="project__action delete material-icons">delete
                                 </div>
                             </div>
@@ -29,6 +29,7 @@
 
                 <modal v-if="showModal" @cancel="closeModal" @success="deleteProject"
                     :title="'Подтвердите удаление проекта'"></modal>
+                    <project  v-if="showProjectModal" @close="closeProjectModal" :project="targetProject" :edit="true"></project>
             </template>
 
             <div v-else class="empty">
@@ -45,7 +46,8 @@
 <script>
 import { ref } from 'vue';
 import modal from '@components/modals/ConfirmModalComponent.vue';
-
+import project from '@components/modals/ProjectModalComponent.vue'
+import state from '/resources/js/messages';
 export default {
     name: 'DashboardComponent',
     props: {
@@ -54,12 +56,14 @@ export default {
         test: String
     },
     components: {
-        modal
+        modal,
+        project
     },
     data() {
         return {
             targetProject: null,
-            openModal: false
+            openModal: false,
+            showProjectModal: false
         }
     },
     computed: {
@@ -85,7 +89,16 @@ export default {
             this.targetProject = project;
             this.openModal = true;
         },
+        closeProjectModal() {
+            this.showProjectModal = false;
+        },
+        openProjectModal(e, project) {
+            e.stopPropagation();
+            this.targetProject = project;
+            this.showProjectModal = true;
+        },
         deleteProject() {
+            console.log(`/project/${this.targetProject.id}/`);
             axios.delete(`/project/${this.targetProject.id}/`,
                 {
                     project_id: this.targetProject.id,
@@ -97,11 +110,11 @@ export default {
                     if (index !== -1) {
                         this.projects.splice(index, 1);
                     }
-                    this.$forceUpdate()
                     this.closeModal()
                 })
                 .catch(error => {
-                    console.log(error);
+                    state.errors.push(error.response.data);
+                    this.closeModal()
                 });
         }
     }

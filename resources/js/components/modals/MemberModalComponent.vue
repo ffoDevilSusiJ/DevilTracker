@@ -2,27 +2,37 @@
   <div class="member-add">
     <div class="member-add__container">
       <div style="display: flex; justify-content: space-between; align-items:center;">
-        <div class="member-add__title">Добавление участников</div>
+        <div class="member-add__title">{{getTitle()}}</div>
         <span @click="$emit('close')" class="close">&times;</span>
 
       </div>
       <form id="form" class="add-project__form" method="POST" :action="route">
         <input type="hidden" name="_token" :value="csrf">
+        <input v-if="edit" type="hidden" name="_method" value="put" />
         <input type="hidden" name="project_id" :value="project.id">
+        <input v-if="edit" type="hidden" name="id" :value="member.id">
 
-        <div id="member-list" class="form-group">
+        <div v-if="!edit" id="member-list" class="form-group">
           <div>Добавить участников (нажать Enter)</div>
           <div class="form-group__divider">
-            <input @keydown.enter="addMemberField" class="form-group__member" type="email" name="members[]" id="email"
+            <input class="form-group__member" type="email" name="members[]" id="email"
               placeholder="Почта участника" />
             <select name="roles[]">
-              <option value="2">Исполнитель</option>
-              <option value="3">Менеджер</option>
+              <option value="3">Исполнитель</option>
+              <option value="2">Менеджер</option>
             </select>
           </div>
-
         </div>
-
+        <div v-if="edit" class="form-group">
+          <div class="form-group__divider">
+            <input disabled class="form-group__member" type="email" id="email"
+              placeholder="Почта участника" :value="member.username"/>
+            <select name="role_id">
+              <option :selected="member.role_id == 3" value="3">Исполнитель</option>
+              <option :selected="member.role_id == 2" value="2">Менеджер</option>
+            </select>
+          </div>
+        </div>
         <div class="form-group form-button">
           <input type="submit" @keydown.enter.prevent name="signup" id="signup" class="form-submit"
             value="Добавить" />
@@ -39,19 +49,26 @@
 export default {
   name: 'AddMemberComponent',
   props: {
-    project: Object
+    project: Object,
+    member: Object
   },
   data() {
-
+    console.log(this.member);
     return {
-      route: window.location.origin + "/project/" + this.project.id + "/members/",
+      route: window.location.origin + "/members",
       csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-      project: this.project
+      project: this.project,
+      edit: !!this.member,
     };
   },
 
   methods: {
-
+    getTitle() {
+      return this.edit ? "Редактирование участника" : "Добавление участников"
+    },
+    getAction() {
+      return this.edit ? "Применить" : "Добавить"
+    }
 
   },
   mounted() {

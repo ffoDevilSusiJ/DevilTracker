@@ -13,14 +13,14 @@
   ChartJS.register(Title, Tooltip, Legend, BarElement, ArcElement, CategoryScale, LinearScale)
   
   export default {
-    name: 'PieTaskChart',
+    name: 'TaskChartComponent',
     components: { Pie },
     props: {
-      project: Object
+      tasks: Array
     },
     data() {
     let countByGroup = {0:0, 1:0, 2:0};
-    this.project.tasks.forEach(task => {
+    this.tasks.forEach(task => {
       const currentGroup = task.group_id;
       if (!countByGroup[currentGroup]) {
         countByGroup[currentGroup] = 0;

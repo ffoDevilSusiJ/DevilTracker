@@ -1,9 +1,7 @@
 <template>
-  <div class="bar">
-    <div class="bar__title">{{ title }}</div>
-    <div class="bar__max">
-      <div class="bar__current"></div>
-    </div>
+  <div class="info">
+    <div class="info__title">{{ title }}</div>
+    <div class="info__value">{{ value }}</div>
   </div>
 </template>
 
@@ -11,7 +9,7 @@
 
 
 export default {
-  name: 'InfoBarComponent',
+  name: 'InfoTitleComponent',
   props: {
     title: String,
     value: String
@@ -26,26 +24,21 @@ export default {
 <style lang="scss">
 @import "resources/assets/sass/vars.scss";
 
-.bar {
+.info {
   width: 385px;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
   &__title {
     margin-bottom: 10px;
     padding-bottom: 5px;
     border-bottom: 2px solid $low-contrast-hover;
   }
 
-  &__max {
+  &__value {
     position: relative;
     height: 30px;
     width: 100%;
-    background-color: $task-hover;
-  }
-
-  &__current {
-    height: 100%;
-    background-color: $task-base;
-    width: v-bind("value");
+    font-size: 18px;
+  font-weight: 500;
   }
 }
 </style>

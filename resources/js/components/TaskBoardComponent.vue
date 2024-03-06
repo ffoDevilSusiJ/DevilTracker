@@ -1,5 +1,5 @@
 <template>
-  <div class="board" @click="handleSelectTask(null)">
+  <div class="board" @click="hideTaskView">
     <div class="board__container">
       <div class="task-group" v-for="groupId in 3" :key="groupId">
         <div class="task-group__title">{{ groupTitle(groupId) }}</div>
@@ -8,134 +8,168 @@
             @dragstart="startDrag($event, task)" v-for="task in getList(groupId)" :key="task.id" :class="getClass(task)"
             @dragenter.prevent @dragover.prevent>
             <div class="task__title">
-              <div class="material-icons">task</div>{{ task.title }} <div class="expand-icon material-icons">expand_more
-              </div>
+              <div class="material-icons">task</div>
+              <span>
+                {{ task.title }}
+              </span>
+              <div @click="toggleExpandTask" class="expand-icon material-icons">expand_more</div>
             </div>
             <div>
               <div class="task__executor">
                 <div class="material-icons">person</div>{{ task.executor.username }}
               </div>
               <div v-if="task.deadline_date" class="task__deadline">
-                <div class="material-icons">schedule</div>{{ task.deadline_date }}
+                <div class="material-icons">schedule</div>{{new Date(task.deadline_date).toLocaleString()}}
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <task-view v-if="selectedTask" :task="selectedTask"></task-view>
-
+    <viewer v-if="selectedTask" :show="showTaskView" :task="selectedTask" @edit="openTaskEditModal"
+      @delete="deleteTask(selectedTask.id)"></viewer>
+    <task v-if="showTaskModal" :current_user="user" :task="selectedTask" @close="closeTaskEditModal" @edit="true"></task>
   </div>
 </template>
 
 <script>
-import { onMounted } from 'vue';
-import { computed } from "vue";
+import viewer  from '@components/TaskViewComponent.vue'
 import draggable from "vuedraggable";
-// Компонент TaskBoardComponent
+import state from '/resources/js/messages';
+import task from '@components/modals/TaskModalComponent.vue';
+
 export default {
   name: 'TaskBoardComponent',
   props: {
-    tasks: Array
+    tasks: Array,
+    project: Object,
+    user: Object
   },
   components: {
     draggable,
+    viewer,
+    task
   },
   data() {
+    let projectUser = this.project.users.find(pUser => pUser.id == this.user.id)
+    console.log(projectUser);
     return {
-      selectedTask: null
-    }
-
-  },
-  setup(props) {
-    const tasks = computed(() => props.tasks.sort((a, b) => b.priority_id - a.priority_id));
-
-    const initialGroupNames = ['Нужно сделать', 'В процессе', 'Сделано'];
-
-
-    const getList = (group_id) => {
-
-      return tasks.value.filter((task) => task.group_id == group_id - 1)
-    }
-    function groupTitle(groupId) {
-      return `${initialGroupNames[groupId - 1]}`;
-    }
-
-    return {
-      tasks,
-      getList,
-      groupTitle
+      selectedTask: null,
+      showTaskModal: false,
+      showTaskView: false,
+      user: projectUser
     };
   },
+  computed: {
+    tasksSorted() {
+      return this.tasks.sort((a, b) => b.priority_id - a.priority_id);
+    },
+    initialGroupNames() {
+      return ['Нужно сделать', 'В процессе', 'Сделано'];
+    }
+  },
   methods: {
+    getList(group_id) {
+      return this.tasksSorted.filter((task) => task.group_id === group_id - 1);
+    },
+    groupTitle(groupId) {
+      return `${this.initialGroupNames[groupId - 1]}`;
+    },
     openTask(event, task) {
       event.stopPropagation();
+      task['project'] = this.project;
       this.selectedTask = task;
+      setTimeout(() => {
+        this.showTaskView = true;
+      }, 100);
     },
     getClass(task) {
+      let isDeadline = task.deadline_date ? new Date(task.deadline_date) <= new Date() : false;
       return {
-        'high-priority': task.priority_id == 3,
-        'mid-priority': task.priority_id == 2,
-        'low-priority': task.priority_id == 1,
-
-        'todo-status': task.group_id == 0,
-        'inprogres-status': task.group_id == 1,
-        'complete-status': task.group_id == 2,
+        'high-priority-border': task.priority_id === 3,
+        'mid-priority-border': task.priority_id === 2,
+        'low-priority-border': task.priority_id === 1,
+        'todo-status': task.group_id === 0,
+        'inprogres-status': task.group_id === 1,
+        'complete-status': task.group_id === 2,
+        'deadline': isDeadline
       };
     },
     startDrag(evt, task) {
-      evt.dataTransfer.dropEffect = 'move'
-      evt.dataTransfer.effectAllowed = 'move'
-      evt.dataTransfer.setData('taskID', task.id)
+      evt.dataTransfer.dropEffect = 'move';
+      evt.dataTransfer.effectAllowed = 'move';
+      evt.dataTransfer.setData('taskID', task.id);
     },
     onDrop(evt, groupId) {
-      const itemID = evt.dataTransfer.getData('taskID')
-      const task = this.tasks.find((task) => task.id == itemID)
+      const itemID = evt.dataTransfer.getData('taskID');
+      groupId -= 1;
+      const task = this.tasks.find((task) => task.id == itemID);
 
-      if (task.group_id != groupId - 1) {
+      if (task.group_id !== groupId) {
         let body = {};
-        task.group_id = groupId - 1;
-        if (task.group_id == 2)
+        if (groupId === 2)
           body = {
-            group_id: task.group_id,
-            completed_at: new Date()
+            group_id: groupId,
+            completed_at: new Date().toISOString(),
           }
         else
           body = {
-            group_id: task.group_id,
+            group_id: groupId,
           }
-        axios.post(`/task/${itemID}/status`, body, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, })
+        axios.post(`/task/${itemID}/status`, body, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
           .then(response => {
-            console.log(response.data);
-            this.$forceUpdate()
+            task.group_id = groupId;
+            task.completed_at = new Date().toISOString();
+            this.$forceUpdate();
           })
           .catch(error => {
-            console.log(error);
+            state.errors.push(error.response.data);
           })
       }
     },
-    handleSelectTask(task) {
-      this.selectedTask = task;
-    }
+    hideTaskView() {
+      this.showTaskView = false;
+    },
+    openTaskEditModal() {
+      this.showTaskModal = true;
+    },
+    closeTaskEditModal() {
+      this.showTaskModal = false;
+    },
+    deleteTask(itemID) {
+      axios.delete(`/task/${itemID}/`, { id: itemID }, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+        .then(response => {
+          var index = this.tasks.findIndex((task) => task.id === itemID);
+          if (index !== -1) {
+            this.tasks.splice(index, 1);
+            this.showTaskView = false;
+            state.successes.push(response.data);
+
+            this.$forceUpdate();
+          }
+        })
+        .catch(error => {
+          state.errors.push(error.response.data);
+          console.log(error);
+        })
+    },
+    toggleExpandTask(e) {
+      e.stopPropagation();
+      let icon = e.target;
+      icon.textContent = (icon.textContent.trim() == "expand_more") ? "expand_less" : "expand_more";
+      icon.closest('.task').classList.toggle('expand');
+    },
   },
-
   mounted() {
-    const taskElements = document.querySelectorAll('.task');
-    const expandIcons = document.querySelectorAll('.expand-icon');
-    expandIcons.forEach(icon => {
-      icon.addEventListener('click', (e) => {
-        e.target.textContent = (e.target.textContent.trim() == "expand_more") ? "expand_less" : "expand_more";
-
-        const task = icon.closest('.task');
-        task.classList.toggle('expand');
-      });
-    });
-    document.addEventListener('click', function (e) {
-    })
+    const urlParams = new URLSearchParams(window.location.search);
+    const task_id = urlParams.get('task');
+    this.selectedTask = this.tasksSorted.find(task => task.id == task_id);
+    console.log(this.selectedTask);
+    setTimeout(() => {
+      this.showTaskView = true;
+    }, 100);
   }
-}
-
-
+};
 </script>
 
 <style lang="scss">
@@ -193,6 +227,7 @@ export default {
   }
 
   .task {
+    position: relative;
     display: flex;
     cursor: pointer;
     user-select: none;
@@ -210,6 +245,19 @@ export default {
 
       .expand-icon {
         opacity: 1;
+      }
+    }
+
+    &__title {
+      display: flex;
+
+      span {
+        white-space: nowrap;
+        overflow: clip;
+        text-overflow: ellipsis;
+        max-width: 85%;
+        position: relative;
+        top: 5px;
       }
     }
 
@@ -232,33 +280,30 @@ export default {
     .expand-icon {
       float: right;
       opacity: 0;
+      position: absolute;
+      right: 15px;
+      margin: auto;
+      top: 15px;
     }
   }
-
-  .high-priority {
-    border-left: 6px solid rgb(194, 0, 0);
+  .deadline {
+    background-color: #ffdada;
   }
-
-  .mid-priority {
-    border-left: 6px solid #ff7c00;
-  }
-
-  .low-priority {
-    border-left: 6px solid rgb(124, 124, 124);
-  }
-
 
   .inprogres-status {
     .complete-status {
       .material-icons {
-        color: #51c549;
+        span {
+          color: #51c549;
+        }
       }
     }
   }
-
   .complete-status {
     .task__title {
-      text-decoration: line-through;
+      span {
+        text-decoration: line-through;
+      }
     }
 
     .material-icons {

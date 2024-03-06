@@ -101,7 +101,7 @@ export default {
 
 .side-menu {
     height: calc(100vh - 40px);
-    width: 50px;
+    min-width: 50px;
     position: relative;
     background-color: $low-contrast-base;
 

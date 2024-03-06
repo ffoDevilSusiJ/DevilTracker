@@ -5,7 +5,7 @@
         <div class="modal__title">Что вы хотите создать</div>
         <span @click="hideModal" class="close">&times;</span>
       </div>
-      <div @click="openProjectForm" class="modal__button">Проект</div>
+      <div @click="$emit('openProject')" class="modal__button">Проект</div>
       <div @click="$emit('openTask')" class="modal__button">Задачу</div>
 
     </div>
@@ -26,12 +26,6 @@ export default {
     hideModal() {
       const modal = document.querySelector('#modal');
       modal.classList.add('hidden');
-    },
-    openProjectForm() {
-      window.location.href = '/create/';
-    },
-    openTaskForm() {
-      window.location.href = '/project/' + this.project.id + '/' + view;
     },
   },
   mounted() {

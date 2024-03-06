@@ -24,17 +24,21 @@
                         <img :src="this.user.avatar_path" alt="">
                     </div>
                     <div class="user-bar__username">{{ this.user.username }}</div>
+                    <div @click="logout" class="user-bar__logout material-icons">logout</div>
                 </div>
             </template>
-            <create-modal v-if="showCreateModal" @open-task="openTaskModal"></create-modal>
-            <task_add  v-if="showTaskModal" @close="closeTaskModal" :projects="projects"></task_add>
+            <create v-if="showCreateModal" @open-project="openProjectModal" @open-task="openTaskModal"></create>
+            <task  v-if="showTaskModal" @close="closeTaskModal" :projects="projects"></task>
+            <project  v-if="showProjectModal" @close="closeProjectModal"></project>
+
         </div>
     </header>
 </template>
 
 <script>
-import task_add from '@components/AddTaskComponent.vue'
-
+import task from '@components/modals/TaskModalComponent.vue'
+import create  from '@components/modals/CreateModalComponent.vue'
+import project from '@components/modals/ProjectModalComponent.vue'
 export default {
     name: 'HeaderComponent',
     props: {
@@ -42,25 +46,38 @@ export default {
         projects: Array
     },
     components: {
-        task_add
+        task,
+        project,
+        create
     },
     data() {
         let isLogin = false;
         if(this.user) isLogin = true;
-        return { isLogin: isLogin, user: this.user, projects: this.projects, showTaskModal: false, showCreateModal: false};
+        return { isLogin: isLogin, user: this.user, projects: this.projects, showTaskModal: false, showCreateModal: false, isEdit: true};
     },
     methods: {
+        logout() {
+            window.location.href = '/logout';
+        },
         toggleModal() {
             this.showCreateModal = true;
             let modal = document.getElementById('modal')
             if(modal) modal.classList.toggle('hidden')
         },
         openTaskModal() {
+            console.log(1);
             this.showCreateModal = false;
             this.showTaskModal = true;
         },
         closeTaskModal() {
             this.showTaskModal = false;
+        },
+        openProjectModal() {
+            this.showCreateModal = false;
+            this.showProjectModal = true;
+        },
+        closeProjectModal() {
+            this.showProjectModal = false;
         },
         redirectToHome() {
             window.location.href = '/';
@@ -159,14 +176,22 @@ export default {
     height: 100%;
     display: flex;
     position: absolute;
+    align-items: center;
     right: 0;
     margin-right: 15px;
 
     &__username {
         height: fit-content;
         align-self: center;
-    }
+        margin-right: 10px;
 
+    }
+    &__logout {
+        height: fit-content;
+        font-size: 18px;
+        cursor: pointer;
+        user-select: none;
+    }
     &__image {
         margin-right: 10px;
         display: flex;
