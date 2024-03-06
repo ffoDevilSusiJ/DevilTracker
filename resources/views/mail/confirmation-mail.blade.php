@@ -4,7 +4,7 @@
 Спасибо за регистрацию, {{$username}}!
 Пожалуйста, нажмите на кнопку ниже, чтобы подтвердить свой адрес электронной почты:
 
-@component('mail::button', ['url' => 'http://localhost:8000/confirm/' . $url])
+@component('mail::button', ['url' => 'https://tracker.devilhost.ru/confirm/' . $url])
 Подтвердить почту
 @endcomponent
 

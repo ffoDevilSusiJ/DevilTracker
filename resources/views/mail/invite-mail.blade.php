@@ -4,7 +4,7 @@
 Вас пригласил {{$user->username}} ( {{$user->email}} )
 В проект {{$project->title}}
 
-@component('mail::button', ['url' => 'http://localhost:8000/invite/' . $confirmationLink])
+@component('mail::button', ['url' => 'https://tracker.devilhost.ru/invite/' . $confirmationLink])
 Присоедениться
 @endcomponent
 
